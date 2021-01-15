@@ -1,5 +1,5 @@
 [package]
-name = "v_onto"
+name = "v-common-onto"
 version = "0.1.1"
 authors = ["itiu <ValeriyBushenev@gmail.com>"]
 edition = "2018"
