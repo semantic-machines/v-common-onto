@@ -1,8 +1,9 @@
 [package]
 name = "v_onto"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["itiu <ValeriyBushenev@gmail.com>"]
 edition = "2018"
+description = "common part of the veda platform"
 
 [lib]
 path = "src/onto/lib.rs"
@@ -11,7 +12,7 @@ path = "src/onto/lib.rs"
 num = "0.2.1"
 num-traits = "0.2.11"
 chrono = "0.4"
-cbor-codec = { git = "https://github.com/itiu/cbor-codec.git", rev="8830b95e8060972786537911f03d4e823182a1ed" }
+v-cbr-codec = "0.7.1"
 rmp = "^0.8"
 rmp-serialize = "0.8.0"
 bincode = "1.2.1"
@@ -19,6 +20,6 @@ serde = { version = "1.0.104", features = ["derive"] }
 serde_json = "1.0"
 log = "0.4"
 rust_decimal = "1.0.3"
-rio_turtle = {git="https://github.com/semantic-machines/rio.git", rev="9f704952b23e07913abcb5ee019a583375e4ca0e"}
-rio_api = {git="https://github.com/semantic-machines/rio.git", rev="9f704952b23e07913abcb5ee019a583375e4ca0e"}
+rio_turtle = "0.5.1"
+rio_api = "0.5.1"
 derivative = "2.1.1"
