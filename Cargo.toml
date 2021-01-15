@@ -4,6 +4,7 @@ version = "0.1.1"
 authors = ["itiu <ValeriyBushenev@gmail.com>"]
 edition = "2018"
 description = "common part of the veda platform"
+license     = "MIT"
 
 [lib]
 path = "src/onto/lib.rs"
