@@ -14,8 +14,12 @@ pub fn parse_msgpack(raw: &mut RawObj) -> Result<String, i8> {
 
     let mut cur = Cursor::new(raw.data.as_slice());
 
-    if let Ok(Marker::FixArray(size)) = read_marker(&mut cur) {
-        if size != 2 {
+    if let Ok(v) = read_marker(&mut cur) {
+        if let Marker::FixArray(size) = v {
+            if size != 2 {
+                return Err(-1);
+            }
+        } else {
             return Err(-1);
         }
     } else {
