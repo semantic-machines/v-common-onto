@@ -80,8 +80,6 @@ impl Individual {
 
     pub fn new_from_obj(obj: &IndividualObj) -> Self {
         let mut new_obj = IndividualObj::default();
-        new_obj.uri = obj.uri.to_owned();
-        new_obj.resources = HashMap::new();
 
         for (predicate, resources) in obj.resources.iter() {
             let mut new_resources = vec![];
