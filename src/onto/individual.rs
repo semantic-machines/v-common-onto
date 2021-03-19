@@ -79,8 +79,10 @@ impl Individual {
     }
 
     pub fn new_from_obj(obj: &IndividualObj) -> Self {
-        let mut new_obj = IndividualObj::default();
-        new_obj.uri = obj.uri.to_owned();
+        let mut new_obj = IndividualObj {
+            uri: obj.uri.to_owned(),
+            resources: Default::default(),
+        };
 
         for (predicate, resources) in obj.resources.iter() {
             let mut new_resources = vec![];
