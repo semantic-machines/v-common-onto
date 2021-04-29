@@ -1,6 +1,6 @@
 [package]
 name = "v-common-onto"
-version = "0.1.6"
+version = "0.1.7"
 authors = ["itiu <ValeriyBushenev@gmail.com>"]
 edition = "2018"
 description = "common part of the veda platform"
@@ -21,6 +21,6 @@ serde = { version = "1.0.104", features = ["derive"] }
 serde_json = "1.0"
 log = "0.4"
 rust_decimal = "1.0.3"
-rio_turtle = "0.5.1"
-rio_api = "0.5.1"
+rio_turtle = "0.5.3"
+rio_api = "0.5.3"
 derivative = "2.1.1"
