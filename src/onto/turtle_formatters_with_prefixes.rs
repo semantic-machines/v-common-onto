@@ -70,25 +70,31 @@ impl<W: Write> TriplesFormatter for TurtleFormatterWithPrefixes<W> {
     type Error = io::Error;
 
     fn format(&mut self, triple: &Triple<'_>) -> Result<(), io::Error> {
+        let s = match triple.subject {
+            NamedOrBlankNode::NamedNode(n) => n.iri,
+            NamedOrBlankNode::BlankNode(n) => n.id,
+        };
+
         if let Some(current_subject_type) = self.current_subject_type {
             let current_subject = current_subject_type.with_value(&self.current_subject);
             if current_subject == triple.subject {
                 if self.current_predicate == *triple.predicate.iri {
-                    write!(self.write, " , {:?}", triple.object)?;
+                    write!(self.write, ", ")?;
                 } else {
-                    write!(self.write, " ;\n  {:?} {:?}", triple.predicate, triple.object)?;
+                    write!(self.write, " ;\n  {} ", triple.predicate.iri)?;
                 }
             } else {
-                write!(self.write, " .\n\n{:?} \n  {:?} {:?}", triple.subject, triple.predicate, triple.object)?;
+                write!(self.write, " .\n\n{} \n  {} ", &s, triple.predicate.iri)?;
             }
         } else {
-            write!(self.write, "{:?} \n  {:?} {:?}", triple.subject, triple.predicate, triple.object)?;
+            write!(self.write, "{} \n  {} ", &s, triple.predicate.iri)?;
         }
+        fmt_object(&triple.object, &mut self.write)?;
 
         self.current_subject.clear();
         match triple.subject {
             NamedOrBlankNode::NamedNode(n) => {
-                self.current_subject.push_str(n.iri);
+                self.current_subject = n.iri.to_owned();
                 self.current_subject_type = Some(NamedOrBlankNodeType::NamedNode);
             }
             NamedOrBlankNode::BlankNode(n) => {
@@ -101,4 +107,107 @@ impl<W: Write> TriplesFormatter for TurtleFormatterWithPrefixes<W> {
 
         Ok(())
     }
+}
+
+fn escape(s: &str) -> impl Iterator<Item = char> + '_ {
+    s.chars().flat_map(EscapeRDF::new)
+}
+
+/// A customized version of EscapeDefault of the Rust standard library
+struct EscapeRDF {
+    state: EscapeRdfState,
+}
+
+enum EscapeRdfState {
+    Done,
+    Char(char),
+    Backslash(char),
+}
+
+impl EscapeRDF {
+    fn new(c: char) -> Self {
+        Self {
+            state: match c {
+                '\n' => EscapeRdfState::Backslash('n'),
+                '\r' => EscapeRdfState::Backslash('r'),
+                '"' => EscapeRdfState::Backslash('"'),
+                '\\' => EscapeRdfState::Backslash('\\'),
+                c => EscapeRdfState::Char(c),
+            },
+        }
+    }
+}
+
+impl Iterator for EscapeRDF {
+    type Item = char;
+
+    fn next(&mut self) -> Option<char> {
+        match self.state {
+            EscapeRdfState::Backslash(c) => {
+                self.state = EscapeRdfState::Char(c);
+                Some('\\')
+            }
+            EscapeRdfState::Char(c) => {
+                self.state = EscapeRdfState::Done;
+                Some(c)
+            }
+            EscapeRdfState::Done => None,
+        }
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let n = self.len();
+        (n, Some(n))
+    }
+
+    fn count(self) -> usize {
+        self.len()
+    }
+}
+
+impl ExactSizeIterator for EscapeRDF {
+    fn len(&self) -> usize {
+        match self.state {
+            EscapeRdfState::Done => 0,
+            EscapeRdfState::Char(_) => 1,
+            EscapeRdfState::Backslash(_) => 2,
+        }
+    }
+}
+
+fn fmt_object(o: &Term, f: &mut dyn Write) -> Result<(), io::Error> {
+    match o {
+        Term::NamedNode(n) => {
+            f.write_all(n.iri.as_bytes())?;
+        }
+        Term::BlankNode(n) => {
+            f.write_all(n.id.as_bytes())?;
+        }
+        Term::Literal(v) => match v {
+            Literal::Simple {
+                value,
+            } => {
+                write!(f, "{}", '"')?;
+                escape(value).try_for_each(|c| write!(f, "{}", c))?;
+                write!(f, "{}", '"')?;
+            }
+            Literal::LanguageTaggedString {
+                value,
+                language,
+            } => {
+                write!(f, "{}", '"')?;
+                escape(value).try_for_each(|c| write!(f, "{}", c))?;
+                write!(f, "\"@{}", language)?;
+            }
+            Literal::Typed {
+                value,
+                datatype,
+            } => {
+                write!(f, "{}", '"')?;
+                escape(value).try_for_each(|c| write!(f, "{}", c))?;
+                write!(f, "\"^^{}", datatype.iri)?;
+            }
+        },
+    }
+    Ok(())
 }

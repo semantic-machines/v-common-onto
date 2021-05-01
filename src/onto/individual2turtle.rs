@@ -201,6 +201,8 @@ fn collect_prefix(v: &str, all_prefixes: &HashMap<String, String>, used_prefixes
 fn extract_prefixes(indvs: &[Individual], all_prefixes: &HashMap<String, String>) -> HashMap<String, String> {
     let mut used_prefixes = HashMap::new();
 
+    collect_prefix("xsd:", &all_prefixes, &mut used_prefixes);
+
     for indv in indvs.iter() {
         collect_prefix(indv.get_id(), &all_prefixes, &mut used_prefixes);
         for (predicate, resources) in &indv.obj.resources {
