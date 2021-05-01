@@ -77,6 +77,7 @@ pub fn parse_cbor_to_predicate(expect_predicate: &str, iraw: &mut Individual) ->
                     is_found = true;
                 }
                 if !add_value(&predicate, &mut d, &mut iraw.obj) {
+                    iraw.raw.cur = d.into_reader().position();
                     return false;
                 }
             }
@@ -88,6 +89,7 @@ pub fn parse_cbor_to_predicate(expect_predicate: &str, iraw: &mut Individual) ->
         }
     }
 
+    iraw.raw.cur = d.into_reader().position();
     false
 }
 
