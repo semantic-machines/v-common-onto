@@ -37,7 +37,7 @@ impl RawObj {
     pub fn new(buff: Vec<u8>) -> RawObj {
         RawObj {
             data: buff,
-            raw_type: RawType::UNKNOWN,
+            raw_type: RawType::Unknown,
             cur: 0,
             len_predicates: 0,
             cur_predicates: 0,
@@ -47,7 +47,7 @@ impl RawObj {
     pub fn new_empty() -> RawObj {
         RawObj {
             data: Vec::new(),
-            raw_type: RawType::UNKNOWN,
+            raw_type: RawType::Unknown,
             cur: 0,
             len_predicates: 0,
             cur_predicates: 0,
@@ -99,7 +99,7 @@ impl Individual {
                 cur: 0,
                 len_predicates: 0,
                 cur_predicates: 0,
-                raw_type: RawType::CBOR,
+                raw_type: RawType::Cbor,
             },
         }
     }
@@ -444,22 +444,19 @@ impl Individual {
     }
 
     pub fn get_literals_nm(&self, predicate: &str) -> Option<Vec<String>> {
-        match self.obj.resources.get(predicate) {
-            Some(v) => Some(
-                v.iter()
-                    .map(|el| {
-                        if let Value::Str(s, _l) = &el.value {
-                            s.to_string()
-                        } else if let Value::Uri(s) = &el.value {
-                            s.to_string()
-                        } else {
-                            "".to_string()
-                        }
-                    })
-                    .collect::<Vec<String>>(),
-            ),
-            None => None,
-        }
+        self.obj.resources.get(predicate).map(|v| {
+            v.iter()
+                .map(|el| {
+                    if let Value::Str(s, _l) = &el.value {
+                        s.to_string()
+                    } else if let Value::Uri(s) = &el.value {
+                        s.to_string()
+                    } else {
+                        "".to_string()
+                    }
+                })
+                .collect::<Vec<String>>()
+        })
     }
 
     pub fn get_first_literal_or_err(&mut self, predicate: &str) -> Result<String, std::io::Error> {

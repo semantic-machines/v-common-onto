@@ -187,15 +187,15 @@ fn fmt_object(o: &Term, f: &mut dyn Write) -> Result<(), io::Error> {
             Literal::Simple {
                 value,
             } => {
-                write!(f, "{}", '"')?;
+                f.write_all(b"\"")?;
                 escape(value).try_for_each(|c| write!(f, "{}", c))?;
-                write!(f, "{}", '"')?;
+                f.write_all(b"\"")?;
             }
             Literal::LanguageTaggedString {
                 value,
                 language,
             } => {
-                write!(f, "{}", '"')?;
+                f.write_all(b"\"")?;
                 escape(value).try_for_each(|c| write!(f, "{}", c))?;
                 write!(f, "\"@{}", language)?;
             }
@@ -203,7 +203,7 @@ fn fmt_object(o: &Term, f: &mut dyn Write) -> Result<(), io::Error> {
                 value,
                 datatype,
             } => {
-                write!(f, "{}", '"')?;
+                f.write_all(b"\"")?;
                 escape(value).try_for_each(|c| write!(f, "{}", c))?;
                 write!(f, "\"^^{}", datatype.iri)?;
             }

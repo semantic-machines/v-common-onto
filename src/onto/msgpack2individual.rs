@@ -8,7 +8,7 @@ use msgpack::Marker;
 use std::io::Cursor;
 
 pub fn parse_msgpack(raw: &mut RawObj) -> Result<String, i8> {
-    if raw.data.is_empty() || raw.raw_type != RawType::MSGPACK {
+    if raw.data.is_empty() || raw.raw_type != RawType::Msgpack {
         return Err(-1);
     }
 

@@ -16,11 +16,11 @@ pub enum TagId {
     NegativeBigint = 3,
     DecimalFraction = 4,
     CborEncoded = 24,
-    URI = 32,
+    Uri = 32,
 }
 
 pub fn parse_cbor(raw: &mut RawObj) -> Result<String, i8> {
-    if raw.data.is_empty() || raw.raw_type != RawType::CBOR {
+    if raw.data.is_empty() || raw.raw_type != RawType::Cbor {
         return Err(-1);
     }
 
@@ -103,7 +103,7 @@ fn add_value(predicate: &str, d: &mut Decoder<Cursor<&[u8]>>, indv: &mut Individ
             }
             Type::Bytes => {
                 if let Ok(t) = d._text(&type_info) {
-                    if tag == TagId::URI as u64 {
+                    if tag == TagId::Uri as u64 {
                         indv.add_uri(&predicate, &t);
                     } else {
                         let mut lang = Lang::NONE;
@@ -122,7 +122,7 @@ fn add_value(predicate: &str, d: &mut Decoder<Cursor<&[u8]>>, indv: &mut Individ
             }
             Type::Text => {
                 if let Ok(t) = d._text(&type_info) {
-                    if tag == TagId::URI as u64 {
+                    if tag == TagId::Uri as u64 {
                         indv.add_uri(&predicate, &t);
                     } else {
                         let mut lang = Lang::NONE;
