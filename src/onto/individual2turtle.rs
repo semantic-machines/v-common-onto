@@ -218,7 +218,7 @@ fn extract_prefixes(indvs: &[Individual], all_prefixes: &HashMap<String, String>
     used_prefixes
 }
 
-pub fn to_turtle(indvs: Vec<Individual>, all_prefixes: &mut HashMap<String, String>) -> Result<Vec<u8>, io::Error> {
+pub fn to_turtle(indvs: &[Individual], all_prefixes: &mut HashMap<String, String>) -> Result<Vec<u8>, io::Error> {
     let used_prefixes = extract_prefixes(&indvs, all_prefixes);
     let mut formatter = TurtleFormatterWithPrefixes::new(Vec::default(), &used_prefixes);
 
